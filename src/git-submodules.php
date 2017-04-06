@@ -11,26 +11,26 @@
 
 namespace Deployer;
 
-require_once '../vendor/deployer/recipes/npm.php';
-require_once '../vendor/deployer/recipes/phinx.php';
+//require_once '../vendor/deployer/recipes/npm.php';
+//require_once '../vendor/deployer/recipes/phinx.php';
 
 /*** NPM INSTALL ***/
 desc('npm in all submodules');
 task('bytic:gitsub:npm-install', function () {
-    $output = run("cd {{deploy_path}} && git submodule foreach 'npm install ||:' ");
+    $output = run("cd {{release_path}} && git submodule foreach 'npm install ||:' ");
     writeln('<info>' . $output . '</info>');
 });
 
 /*** GRUNT INSTALL ***/
 desc('grunt in all submodules');
 task('bytic:gitsub:grunt', function () {
-    $output = run("cd {{deploy_path}} git submodule foreach 'grunt ||:' ");
+    $output = run("cd {{release_path}} git submodule foreach 'grunt ||:' ");
     writeln('<info>' . $output . '</info>');
 });
 
 /*** PHINX INSTALL ***/
 //desc('grunt in all submodules');
 //task('bytic:gitsub:npm-install', function () {
-//    $output = run("cd {{deploy_path}} git submodule foreach 'grunt ||:' ");
+//    $output = run("cd {{release_path}} git submodule foreach 'grunt ||:' ");
 //    writeln('<info>' . $output . '</info>');
 //});

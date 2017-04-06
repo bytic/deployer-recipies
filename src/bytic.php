@@ -11,9 +11,9 @@
 
 namespace Deployer;
 
-require_once '../vendor/deployer/deployer/recipe/common.php';
-require_once '../vendor/deployer/recipes/npm.php';
-require_once '../vendor/deployer/recipes/phinx.php';
+//require_once '../vendor/deployer/deployer/recipe/common.php';
+//require_once '../vendor/deployer/recipes/npm.php';
+//require_once '../vendor/deployer/recipes/phinx.php';
 require_once __DIR__ . '/git-submodules.php';
 
 /*** CONFIGURATION ***/
