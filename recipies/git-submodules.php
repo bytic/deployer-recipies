@@ -11,9 +11,6 @@
 
 namespace Deployer;
 
-//require_once '../vendor/deployer/recipes/npm.php';
-//require_once '../vendor/deployer/recipes/phinx.php';
-
 /*** NPM INSTALL ***/
 desc('npm in all submodules');
 task('bytic:gitsub:npm-install', function () {
