@@ -14,15 +14,13 @@ namespace Deployer;
 /*** NPM INSTALL ***/
 desc('npm in all submodules');
 task('bytic:gitsub:npm-install', function () {
-    $output = run("cd {{release_path}} && git submodule foreach 'npm install ||:' ");
-    writeln('<info>' . $output . '</info>');
+    runInSubmodules('npm install');
 });
 
 /*** GRUNT INSTALL ***/
 desc('grunt in all submodules');
 task('bytic:gitsub:grunt', function () {
-    $output = run("cd {{release_path}} git submodule foreach 'grunt ||:' ");
-    writeln('<info>' . $output . '</info>');
+    runInSubmodules('grunt');
 });
 
 /*** PHINX INSTALL ***/
@@ -31,3 +29,17 @@ task('bytic:gitsub:grunt', function () {
 //    $output = run("cd {{release_path}} git submodule foreach 'grunt ||:' ");
 //    writeln('<info>' . $output . '</info>');
 //});
+
+/*** Run command in each submodule **
+ * @param $command
+ * @param bool $output
+ * @return Type\Result
+ */
+function runInSubmodules($command, $output = true)
+{
+    $result = run("cd {{release_path}} && git submodule foreach '{$command} ||:' ");
+    if ($output) {
+        writeln('<info>' . $result . '</info>');
+    }
+    return $result;
+}
