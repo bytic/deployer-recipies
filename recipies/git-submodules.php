@@ -23,12 +23,11 @@ task('bytic:gitsub:grunt', function () {
     runInSubmodules('grunt');
 });
 
-/*** PHINX INSTALL ***/
-//desc('grunt in all submodules');
-//task('bytic:gitsub:npm-install', function () {
-//    $output = run("cd {{release_path}} git submodule foreach 'grunt ||:' ");
-//    writeln('<info>' . $output . '</info>');
-//});
+/*** PHINX MIGRATE ***/
+desc('phinx migrate in all submodules');
+task('bytic:gitsub:phinx-migrate', function () {
+    runInSubmodules('../vendor/bin/phinx migrate');
+});
 
 /*** Run command in each submodule **
  * @param $command

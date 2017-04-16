@@ -33,9 +33,15 @@ set('shared_files', [
     '.env',
 ]);
 
+/*** SHARED DIRS ***/
+set('shared_dirs', [
+    'storage/app',
+    'storage/logs',
+]);
+
 /*** WRITABLES DIRS ***/
 set('writable_dirs', [
-    'uploads',
+    'storage/app',
     'storage/logs',
     'storage/cache',
     'storage/cache/autoloader'
@@ -51,9 +57,9 @@ task('deploy', [
     'deploy:writable',
     'deploy:vendors',
 //    'npm:install',
-//    'phinx:migrate',
     'bytic:gitsub:npm-install',
     'bytic:gitsub:grunt',
+    'bytic:gitsub:phinx-migrate',
     'deploy:clear_paths',
     'deploy:symlink',
     'deploy:unlock',
