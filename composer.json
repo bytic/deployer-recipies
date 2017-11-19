@@ -14,11 +14,19 @@
       "email": "hello@gabrielsolomon.ro"
     }
   ],
-  "require-dev": {
-    "deployer/deployer": "^4.3",
-    "deployer/recipes": "^4.0"
+  "autoload-dev": {
+    "psr-4": {
+      "ByTIC\\DeployerRecipies\\Tests\\": "tests"
+    }
   },
   "require": {
     "php": ">=7.0.0"
+  },
+  "require-dev": {
+    "deployer/deployer": "^4.3",
+    "deployer/recipes": "^4.0",
+    "squizlabs/php_codesniffer": "^3.0",
+    "phpunit/phpunit": "^6.2",
+    "mockery/mockery": "^0.9"
   }
 }
