@@ -76,7 +76,6 @@ task('deploy', [
     'deploy:symlink',
     'deploy:unlock',
     'cleanup',
-    'current',
     'success',
 ]);
 
