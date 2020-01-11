@@ -1,22 +1,19 @@
 <?php
 
-/* (c) Gabriel Solomon <hello@gabrielsolomon.ro>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 /*
  * This recipe supports ByTic Framework 0.9
  */
 
 namespace Deployer;
 
-require_once __DIR__ . '/git-submodules.php';
+require 'vendor/deployer/deployer/recipe/common.php';
+require 'vendor/deployer/recipes/npm.php';
+require_once __DIR__.'/git-submodules.php';
 
 /*** CONFIGURATION ***/
 //set('ssh_type', 'native');
 //set('ssh_multiplexing', true);
-//set('git_cache', true);
+set('git_cache', true);
 
 
 set('keep_releases', 3);
@@ -44,7 +41,7 @@ set('writable_dirs', [
     'storage/app',
     'storage/logs',
     'storage/cache',
-    'storage/cache/autoloader'
+    'storage/cache/autoloader',
 ]);
 
 /*** MAIN TASK ***/
