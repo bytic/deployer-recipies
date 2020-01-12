@@ -29,6 +29,7 @@ set('ssh_multiplexing', true);
 require 'vendor/deployer/deployer/recipe/common.php';
 require 'vendor/deployer/recipes/npm.php';
 require_once __DIR__.'/git-submodules.php';
+require_once __DIR__.'/bytic-console.php';
 
 /*** CONFIGURATION ***/
 //set('ssh_type', 'native');
