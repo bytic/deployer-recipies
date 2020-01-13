@@ -1,2 +1,8 @@
-vendor
+# EDITOR
 /.idea/workspace.xml
+
+# VENDOR
+vendor
+
+# TESTS
+.phpunit.result.cache
