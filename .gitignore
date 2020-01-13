@@ -3,6 +3,7 @@
 
 # VENDOR
 vendor
+composer.lock
 
 # TESTS
 .phpunit.result.cache
