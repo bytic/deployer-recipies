@@ -1,0 +1,1 @@
+C:37:"PHPUnit\Runner\DefaultTestResultCache":187:{a:2:{s:7:"defects";a:1:{s:58:"ByTIC\DeployerRecipies\Tests\ByticConsoleTest::testCommand";i:3;}s:5:"times";a:1:{s:58:"ByTIC\DeployerRecipies\Tests\ByticConsoleTest::testCommand";d:0.11;}}}

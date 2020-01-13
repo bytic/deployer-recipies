@@ -15,19 +15,15 @@ set('bin/bytic', function () {
 
     if ($byticPath !== null) {
         return "bytic";
-    } else {
-        if (test('[ -f {{release_path}}/vendor/bin/bytic ]')) {
-            return "{{release_path}}/vendor/bin/bytic";
-        } else {
-            if (test('[ -f ~/.composer/vendor/bin/bytic ]')) {
-                return '~/.composer/vendor/bin/bytic';
-            } else {
-                throw new \RuntimeException('Cannot find bytic. Please specify path to bytic manually');
-            }
-        }
     }
-}
-);
+    if (test('[ -f {{release_path}}/vendor/bin/bytic ]')) {
+        return "{{release_path}}/vendor/bin/bytic";
+    }
+    if (test('[ -f ~/.composer/vendor/bin/bytic ]')) {
+        return '~/.composer/vendor/bin/bytic';
+    }
+    throw new \RuntimeException('Cannot find bytic. Please specify path to bytic manually');
+});
 
 /**
  * Make Phinx command
@@ -39,7 +35,7 @@ set('bin/bytic', function () {
  */
 set('bytic_get_cmd', function () {
     return function ($cmdName, $conf) {
-        $bytic = get('bytic_path') ?: get('bin/bytic');
+        $bytic = get('bin/bytic');
 
         $byticCmd = "$bytic $cmdName";
 
