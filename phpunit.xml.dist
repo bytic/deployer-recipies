@@ -9,9 +9,11 @@
 >
     <testsuites>
         <testsuite name="Recipes">
-            <directory>test/src/</directory>
+            <directory suffix="Test.php">test/src/</directory>
         </testsuite>
     </testsuites>
+
+    <!-- Filter for coverage reports. -->
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
             <directory>src/</directory>
