@@ -7,7 +7,6 @@
 namespace Deployer;
 
 require 'vendor/deployer/deployer/recipe/common.php';
-require 'vendor/deployer/recipes/npm.php';
 require_once __DIR__.'/git-submodules.php';
 require_once __DIR__.'/bytic-console.php';
 
@@ -24,7 +23,6 @@ set('writable_use_sudo', false); // Using sudo in writable commands?
 //env('composer_options',
 //    'install --no-dev --verbose --prefer-dist --optimize-autoloader --no-progress --no-interaction');
 set('release_name', date('YmdHis')); // name of folder in releases
-
 
 /*** SHARED FILES ***/
 set('shared_files', [
@@ -54,10 +52,8 @@ task('deploy', [
     'deploy:shared',
     'deploy:writable',
     'deploy:vendors',
-//    'npm:install',
-    'bytic:gitsub:npm-install',
-    'bytic:gitsub:grunt',
-    'bytic:gitsub:phinx-migrate',
+    'assets:install',
+    'assets:build',
     'deploy:clear_paths',
     'deploy:symlink',
     'deploy:unlock',
@@ -65,3 +61,6 @@ task('deploy', [
     'current',
     'success',
 ]);
+
+// [Optional] if deploy fails automatically unlock.
+after('deploy:failed', 'deploy:unlock');
