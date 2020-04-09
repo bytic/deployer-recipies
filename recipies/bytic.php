@@ -11,9 +11,9 @@
 namespace Deployer;
 
 require 'recipe/common.php';
-require 'recipe/npm.php';
 require 'recipe/cloudflare.php';
 
+require_once __DIR__ . '/npm.php';
 require_once __DIR__ . '/git-submodules.php';
 require_once __DIR__.'/bytic-console.php';
 
@@ -29,7 +29,6 @@ set('writable_use_sudo', false); // Using sudo in writable commands?
 //env('composer_options',
 //    'install --no-dev --verbose --prefer-dist --optimize-autoloader --no-progress --no-interaction');
 set('release_name', date('YmdHis')); // name of folder in releases
-
 
 /*** SHARED FILES ***/
 set('shared_files', [
@@ -72,7 +71,8 @@ task('deploy', [
     'deploy:shared',
     'deploy:writable',
     'deploy:vendors',
-    'npm:install',
+    'assets:install',
+    'assets:build',
     'deploy:clear_paths',
     'deploy:symlink',
     'deploy:unlock',
@@ -82,3 +82,4 @@ task('deploy', [
 
 before('deploy:update_code', 'deploy:git-cache');
 after('deploy:symlink', 'deploy:storage-symlink');
+after('deploy:failed', 'deploy:unlock');
