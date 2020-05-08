@@ -26,7 +26,7 @@ set('bin/bytic', function () {
 });
 
 /**
- * Make Phinx command
+ * Make Bytic command
  *
  * @param string $cmdName Name of command
  * @param array $conf Command options(config)

@@ -10,6 +10,7 @@ require 'vendor/deployer/deployer/recipe/common.php';
 
 require_once __DIR__.'/npm.php';
 require_once __DIR__.'/git-submodules.php';
+require_once __DIR__.'/bytic-commands.php';
 require_once __DIR__.'/bytic-console.php';
 
 /*** CONFIGURATION ***/
@@ -57,12 +58,19 @@ task('deploy', [
     'assets:install',
     'assets:build',
     'deploy:clear_paths',
+    'deploy:optimize',
     'deploy:symlink',
     'deploy:unlock',
     'cleanup',
     'current',
     'success',
 ]);
+
+/**
+ * Helper tasks
+ */
+desc('Optimize deployed application');
+task('artisan:up', ['bytic:optimize']);
 
 // [Optional] if deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
