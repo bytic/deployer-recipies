@@ -15,6 +15,7 @@ require 'recipe/cloudflare.php';
 
 require_once __DIR__ . '/npm.php';
 require_once __DIR__ . '/git-submodules.php';
+require_once __DIR__.'/bytic-commands.php';
 require_once __DIR__.'/bytic-console.php';
 
 /*** CONFIGURATION ***/
@@ -74,11 +75,18 @@ task('deploy', [
     'assets:install',
     'assets:build',
     'deploy:clear_paths',
+    'deploy:optimize',
     'deploy:symlink',
     'deploy:unlock',
     'cleanup',
     'success',
 ]);
+
+/**
+ * Helper tasks
+ */
+desc('Optimize deployed application');
+task('artisan:up', ['bytic:optimize']);
 
 before('deploy:update_code', 'deploy:git-cache');
 after('deploy:symlink', 'deploy:storage-symlink');
