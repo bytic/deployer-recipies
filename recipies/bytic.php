@@ -86,7 +86,7 @@ task('deploy', [
  * Helper tasks
  */
 desc('Optimize deployed application');
-task('artisan:up', ['bytic:optimize']);
+task('deploy:optimize', ['bytic:optimize']);
 
 before('deploy:update_code', 'deploy:git-cache');
 after('deploy:symlink', 'deploy:storage-symlink');

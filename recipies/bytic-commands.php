@@ -8,6 +8,5 @@ task('bytic:optimize', function () {
 
     $byticCmd = get('bytic_get_cmd')('config:cache', []);
 
-    $output = run($byticCmd);
-    writeln('<info>' . $output . '</info>');
+    run($byticCmd);
 });
