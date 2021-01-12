@@ -20,9 +20,8 @@
     }
   },
   "require": {
-    "php": ">=7.1",
-    "deployer/deployer": "^6.0",
-    "deployer/recipes": "^6.0"
+    "deployer/deployer": "^6.8",
+    "symfony/finder": "^4.4 || ^5.0"
   },
   "require-dev": {
     "bytic/console": "^0.9|^1.0",

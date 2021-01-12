@@ -1,29 +1,21 @@
 <?php
 
-/* (c) Gabriel Solomon <hello@gabrielsolomon.ro>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- *
- * This recipe supports ByTic Framework 0.9
- */
-
 namespace Deployer;
 
 require 'recipe/common.php';
-require 'recipe/cloudflare.php';
+require __DIR__ . '/../common/cloudflare.php';
+require __DIR__ . '/../common/npm.php';
 
 require_once __DIR__ . '/bytic-config.php';
-
-require_once __DIR__ . '/npm.php';
 require_once __DIR__ . '/git-submodules.php';
-require_once __DIR__.'/bytic-commands.php';
-require_once __DIR__.'/bytic-console.php';
-
+require_once __DIR__ . '/bytic-commands.php';
+require_once __DIR__ . '/bytic-console.php';
 
 /*** DEFINE TASKS ***/
-task('deploy:storage-symlink', function () {
-    run("cd {{deploy_path}} && {{bin/symlink}} {{release_path}}/storage/app/public current/public/uploads ");
+task(
+    'deploy:storage-symlink',
+    function () {
+        run("cd {{deploy_path}} && {{bin/symlink}} {{release_path}}/storage/app/public current/public/uploads ");
 });
 
 task(
