@@ -12,9 +12,12 @@ use Symfony\Component\Finder\Finder;
 set(
     'bin/supervisor',
     static function () {
-        return locateBinaryPath('supervisorctl');
+        $sudo = get('supervisor_sudo') ? 'sudo ' : '';
+        return $sudo . locateBinaryPath('supervisorctl');
     }
 );
+
+set('supervisor_sudo', true);
 
 /**
  * This is the directory where you have your supervisor configs
