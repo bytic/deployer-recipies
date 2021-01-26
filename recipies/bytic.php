@@ -51,6 +51,20 @@ task('deploy', [
 desc('Optimize deployed application');
 task('deploy:optimize', ['bytic:optimize']);
 
+after('cleanup', 'assets:cleanup');
+
+task('assets:cleanup',  function () {
+    if (!has('previous_release')) {
+        return;
+    }
+    if (!test('[ -d {{previous_release}}/node_modules ]')) {
+        return;
+    }
+
+    $sudo = get('cleanup_use_sudo') ? 'sudo' : '';
+    run("$sudo rm -rf {{previous_release}}/node_modules");
+});
+
 before('deploy:update_code', 'deploy:git-cache');
 after('deploy:symlink', 'deploy:storage-symlink');
 after('deploy:failed', 'deploy:unlock');

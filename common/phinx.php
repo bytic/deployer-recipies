@@ -1,6 +1,5 @@
 <?php
 
-
 /* (c) Anton Medvedev <anton@medv.io>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -39,16 +38,12 @@ set(
 
         if ($phinxPath !== null) {
             return "phinx";
+        } elseif (test('[ -f {{release_path}}/vendor/bin/phinx ]')) {
+            return "{{release_path}}/vendor/bin/phinx";
+        } elseif (test('[ -f ~/.composer/vendor/bin/phinx ]')) {
+            return '~/.composer/vendor/bin/phinx';
         } else {
-            if (test('[ -f {{release_path}}/vendor/bin/phinx ]')) {
-                return "{{release_path}}/vendor/bin/phinx";
-            } else {
-                if (test('[ -f ~/.composer/vendor/bin/phinx ]')) {
-                    return '~/.composer/vendor/bin/phinx';
-                } else {
-                    throw new \RuntimeException('Cannot find phinx. Please specify path to phinx manually');
-                }
-            }
+            throw new \RuntimeException('Cannot find phinx. Please specify path to phinx manually');
         }
     }
 );
