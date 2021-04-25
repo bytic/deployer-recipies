@@ -53,7 +53,14 @@ after('deploy:failed', 'deploy:unlock');
 desc('Optimize deployed application');
 task('deploy:optimize', ['bytic:optimize']);
 
+after('cleanup', 'cleanup:current_release');
 after('cleanup', 'cleanup:previous_release');
+
+task(
+    'cleanup:current_release',
+    ['deploy:cleanup:node']
+);
+
 task(
     'cleanup:previous_release',
     [
