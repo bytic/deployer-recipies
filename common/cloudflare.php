@@ -17,9 +17,13 @@ task('deploy:cloudflare', function () {
         $headers = [
             'X-Auth-User-Service-Key' => $config['service_key']
         ];
+    } elseif (!empty($config['api_token'])) {
+        $headers = [
+            'Authorization' => 'Bearer ' . $config['api_token']
+        ];
     } elseif (!empty($config['email']) && !empty($config['api_key'])) {
         $headers = [
-            'X-Auth-Key'   => $config['api_key'],
+            'X-Auth-Key' => $config['api_key'],
             'X-Auth-Email' => $config['email']
         ];
     } else {
@@ -36,21 +40,23 @@ task('deploy:cloudflare', function () {
         $ch = curl_init("https://api.cloudflare.com/client/v4/$url");
 
         $parsedHeaders = [];
-        foreach($headers as $key => $value){
+        foreach ($headers as $key => $value) {
             $parsedHeaders[] = "$key: $value";
         }
 
         curl_setopt_array($ch, [
-            CURLOPT_HTTPHEADER     => $parsedHeaders,
+            CURLOPT_HTTPHEADER => $parsedHeaders,
             CURLOPT_RETURNTRANSFER => true
         ]);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
         curl_setopt_array($ch, $opts);
 
         $res = curl_exec($ch);
 
         if (curl_errno($ch)) {
-            throw new \RuntimeException("Error making curl request (result: $res)");
+            throw new \RuntimeException("Error making curl request (result: " . curl_error($ch) . ")");
         }
 
         curl_close($ch);
@@ -60,8 +66,8 @@ task('deploy:cloudflare', function () {
 
     // get the mysterious zone id from Cloud Flare
     $zones = json_decode($makeRequest(
-        "zones?name={$config['domain']}"
-    ), true);
+                             "zones?name={$config['domain']}"
+                         ), true);
 
     if (empty($zones['success']) || !empty($zones['errors'])) {
         throw new \RuntimeException("Problem with zone data");
@@ -74,7 +80,7 @@ task('deploy:cloudflare', function () {
         "zones/$zoneId/purge_cache",
         [
             CURLOPT_CUSTOMREQUEST => 'DELETE',
-            CURLOPT_POSTFIELDS    => json_encode(
+            CURLOPT_POSTFIELDS => json_encode(
                 [
                     'purge_everything' => true
                 ]
