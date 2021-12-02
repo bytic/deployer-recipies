@@ -2,7 +2,7 @@
 
 namespace ByTIC\DeployerRecipies\Tests;
 
-use Deployer\Console\Application;
+use Symfony\Component\Console\Application;
 use Deployer\Deployer;
 use Deployer\Task\Context;
 use PHPUnit\Framework\TestCase as BaseTestCase;
@@ -88,7 +88,7 @@ abstract class AbstractDepCase extends BaseTestCase
 
         // Init Deployer
         $this->deployer->init();
-        $this->deployer->getConsole()->afterRun(null);
+//        $this->deployer->getConsole()->afterRun(null);
     }
 
 
