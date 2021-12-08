@@ -46,11 +46,11 @@ abstract class AbstractDepCase extends BaseTestCase
 
         // Init repository
         $repository = DEPLOYER_FIXTURES . '/repository';
-        \exec("cd $repository && git init");
-        \exec("cd $repository && git add .");
-        \exec("cd $repository && git config user.name 'John Smith'");
-        \exec("cd $repository && git config user.email 'john.smith@example.com'");
-        \exec("cd $repository && git commit -m 'init commit'");
+//        \exec("cd $repository && git init");
+//        \exec("cd $repository && git add .");
+//        \exec("cd $repository && git config user.name 'John Smith'");
+//        \exec("cd $repository && git config user.email 'john.smith@example.com'");
+//        \exec("cd $repository && git commit -m 'init commit'");
     }
 
     public static function tearDownAfterClass(): void

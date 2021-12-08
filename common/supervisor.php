@@ -13,7 +13,7 @@ set(
     'bin/supervisor',
     static function () {
         $sudo = get('supervisor_sudo') ? 'sudo ' : '';
-        return $sudo . locateBinaryPath('supervisorctl');
+        return $sudo . which('supervisorctl');
     }
 );
 
@@ -50,8 +50,13 @@ task(
 task(
     'supervisor:upload',
     static function (): void {
+        $folder = get('supervisor_source_dir');
+        if (!test('[ -d {{release_path}}/'.$folder.' ]')) {
+            return;
+        }
+
         $finder = new Finder();
-        $finder->files()->in(get('supervisor_source_dir'));
+        $finder->files()->in($folder);
 
         $mergedConfigs = '';
         foreach ($finder as $file) {
