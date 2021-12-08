@@ -24,9 +24,9 @@ task(
         'deploy:prepare',
         'deploy:vendors',
         'deploy:assets',
-        'deploy:migrations',
         'deploy:optimize',
         'deploy:publish',
+        'deploy:migrations',
     ]
 );
 

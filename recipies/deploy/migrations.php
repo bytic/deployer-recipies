@@ -2,8 +2,6 @@
 
 namespace Deployer;
 
-require __DIR__ . '/../../common/phinx.php';
-
 desc('Deploy migrations');
 task('deploy:migrations', ['bytic:migrations:migrate']);
 
