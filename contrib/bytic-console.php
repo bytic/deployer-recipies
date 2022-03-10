@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Deployer;
 
 /**
@@ -70,7 +72,7 @@ function bytic($command, $options = [])
 //            return;
 //        }
 
-        $byticCmd = get('bytic_get_cmd')('config:cache', $options);
+        $byticCmd = get('bytic_get_cmd')($command, $options);
 
         // Run the artisan command.
         $output = run("{{bin/php}} $byticCmd");
