@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Deployer;
 
 /**
@@ -50,3 +52,34 @@ set('bytic_get_cmd', function () {
         return $byticCmd;
     };
 });
+
+/**
+ * Run an bytic command.
+ * @param string $command The artisan command (with cli options if any).
+ * @param array $options The options that define the behaviour of the command.
+ * @return callable A function that can be used as a task.
+ */
+function bytic($command, $options = [])
+{
+    return function () use ($command, $options) {
+//        // Ensure we warn or fail when a command relies on the ".env" file.
+//        if (in_array('failIfNoEnv', $options) && !test('[ -s {{release_or_current_path}}/.env ]')) {
+//            throw new \Exception('Your .env file is empty! Cannot proceed.');
+//        }
+//
+//        if (in_array('skipIfNoEnv', $options) && !test('[ -s {{release_or_current_path}}/.env ]')) {
+//            warning("Your .env file is empty! Skipping...</>");
+//            return;
+//        }
+
+        $byticCmd = get('bytic_get_cmd')($command, $options);
+
+        // Run the artisan command.
+        $output = run("{{bin/php}} $byticCmd");
+
+        // Output the results when appropriate.
+//        if (in_array('showOutput', $options)) {
+        writeln("<info>$output</info>");
+//        }
+    };
+}
