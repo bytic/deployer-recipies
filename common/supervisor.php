@@ -77,7 +77,7 @@ task(
          * This 'hack' will save a multiline text string into a file
          * See https://stackoverflow.com/questions/10969953/how-to-output-a-multiline-string-in-bash
          */
-        run("cat <<EOT > {{supervisor_remote_dir}}/{{supervisor_config_filename}}\n{$mergedConfigs}EOT");
+        run('echo "'.$mergedConfigs.'" >> {{supervisor_remote_dir}}/{{supervisor_config_filename}}');
         // todo create a test that checks for multiline replacements
 
     }
