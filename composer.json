@@ -20,7 +20,7 @@
     }
   },
   "require": {
-    "deployer/deployer": "v7.0.0-rc.8",
+    "deployer/deployer": "^7.0",
     "symfony/finder": "^5.0|^6.0"
   },
   "require-dev": {
