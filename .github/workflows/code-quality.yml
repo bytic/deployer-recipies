@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "main", "master" ]
 
+permissions:
+  contents: read
+
 jobs:
   phpcs:
     name: PHP CodeSniffer (PSR-12)
