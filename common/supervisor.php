@@ -73,11 +73,12 @@ task(
             return;
         }
 
-        /**
-         * This 'hack' will save a multiline text string into a file
-         * See https://stackoverflow.com/questions/10969953/how-to-output-a-multiline-string-in-bash
-         */
-        run('echo "'.$mergedConfigs.'" >> {{supervisor_remote_dir}}/{{supervisor_config_filename}}');
+        $delimiter = 'SUPERVISOR_CONFIG_' . bin2hex(random_bytes(8));
+        run(
+            "cat <<'{$delimiter}' > {{supervisor_remote_dir}}/{{supervisor_config_filename}}\n"
+            . $mergedConfigs
+            . "\n{$delimiter}"
+        );
         // todo create a test that checks for multiline replacements
 
     }
