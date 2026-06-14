@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Deployer;
 
 require 'recipe/common.php';
 
 require_once __DIR__ . '/../contrib/bytic-console.php';
+require_once __DIR__ . '/../contrib/bytic-commands.php';
 
 require __DIR__ . '/../common/cloudflare.php';
 
@@ -14,6 +17,7 @@ require __DIR__ . '/deploy/config.php';
 require __DIR__ . '/deploy/migrations.php';
 require __DIR__ . '/deploy/optimize.php';
 require __DIR__ . '/deploy/scheduler.php';
+require __DIR__ . '/deploy/storage.php';
 require __DIR__ . '/deploy/supervisor.php';
 
 /*** MAIN TASK ***/

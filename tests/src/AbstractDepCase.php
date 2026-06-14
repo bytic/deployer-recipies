@@ -1,37 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ByTIC\DeployerRecipies\Tests;
 
-use Symfony\Component\Console\Application;
 use Deployer\Deployer;
 use Deployer\Task\Context;
 use PHPUnit\Framework\TestCase as BaseTestCase;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Tester\ApplicationTester;
 
-/**
- * Class AbstractDepCase
- * @package ByTIC\DeployerRecipies\Tests
- */
 abstract class AbstractDepCase extends BaseTestCase
 {
-    /**
-     * @var ApplicationTester
-     */
-    private $tester;
-    /**
-     * @var Deployer
-     */
-    protected $deployer;
-    /**
-     * @var string
-     */
-    public static $tmpPath;
-    /**
-     * @var string
-     */
-    public static $currentPath = '';
+    private ApplicationTester $tester;
+
+    protected Deployer $deployer;
+
+    public static string $tmpPath = '';
+
+    public static string $currentPath = '';
 
     public static function setUpBeforeClass(): void
     {
@@ -42,15 +31,7 @@ abstract class AbstractDepCase extends BaseTestCase
         self::cleanUp();
 
         mkdir(self::$tmpPath);
-        self::$tmpPath = realpath(self::$tmpPath);
-
-        // Init repository
-        $repository = DEPLOYER_FIXTURES . '/repository';
-//        \exec("cd $repository && git init");
-//        \exec("cd $repository && git add .");
-//        \exec("cd $repository && git config user.name 'John Smith'");
-//        \exec("cd $repository && git config user.email 'john.smith@example.com'");
-//        \exec("cd $repository && git commit -m 'init commit'");
+        self::$tmpPath = (string) realpath(self::$tmpPath);
     }
 
     public static function tearDownAfterClass(): void
@@ -59,14 +40,14 @@ abstract class AbstractDepCase extends BaseTestCase
         self::cleanUp();
     }
 
-    protected static function cleanUp()
+    protected static function cleanUp(): void
     {
         if (is_dir(self::$tmpPath)) {
             \exec('rm -rf ' . self::$tmpPath);
         }
     }
 
-    public function reset()
+    public function reset(): void
     {
         // Create app tester
         $console = new Application();
@@ -75,7 +56,7 @@ abstract class AbstractDepCase extends BaseTestCase
         $this->tester = new ApplicationTester($console);
 
         // Prepare Deployer
-        $input = $this->createMock(Input::class);
+        $input  = $this->createMock(Input::class);
         $output = $this->createMock(Output::class);
 
         $this->deployer = new Deployer($console, $input, $output);
@@ -88,29 +69,25 @@ abstract class AbstractDepCase extends BaseTestCase
 
         // Init Deployer
         $this->deployer->init();
-//        $this->deployer->getConsole()->afterRun(null);
     }
 
-
     /**
-     * Load recipe
+     * Load the recipe under test.
      */
-    abstract protected function load();
+    abstract protected function load(): void;
 
     /**
-     * Execute command with tester
+     * Execute a Deployer command with the application tester.
      *
-     * @param string $command
-     * @param array $args
-     * @param array $options
-     * @return string result
+     * @param string  $command
+     * @param array<string, mixed> $args
+     * @param array<string, mixed> $options
      */
-    protected function start($command, $args = [], $options = [])
+    protected function start(string $command, array $args = [], array $options = []): string
     {
         $this->reset();
         $this->tester->run(['command' => $command] + $args, $options);
-        // Clear realpath cache.
-        clearstatcache(self::$tmpPath);
+        clearstatcache(true, self::$tmpPath);
 
         return $this->tester->getDisplay();
     }
