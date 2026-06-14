@@ -11,7 +11,7 @@ use Symfony\Component\Finder\Finder;
  */
 set(
     'bin/supervisor',
-    static function () {
+    static function (): string {
         $sudo = get('supervisor_sudo') ? 'sudo ' : '';
         return $sudo . which('supervisorctl');
     }
@@ -20,38 +20,39 @@ set(
 set('supervisor_sudo', true);
 
 /**
- * This is the directory where you have your supervisor configs
+ * Local directory containing your supervisor config files.
  */
 set('supervisor_source_dir', 'etc/supervisor');
 
 /**
- * This is the directory on your server where the final config file will be uploaded
+ * Remote directory where the merged config file will be uploaded.
  */
 set('supervisor_remote_dir', '/etc/supervisor/conf.d');
 
 /**
- * This library will create a single final config file for supervisor. This will be the name of that file
+ * Name of the merged config file created on the server.
  */
 set('supervisor_config_filename', '{{application}}-{{stage}}.conf');
 
 /**
- * Contains an array of config files to exclude.
- * You can use this to exclude files based on stage for example
+ * List of local config file names to exclude from the merged output.
  */
 set('supervisor_excluded_files', []);
 
+desc('Stop all services managed by Supervisor');
 task(
     'supervisor:stop',
     static function (): void {
         run('{{bin/supervisor}} stop all');
     }
-)->desc('Stops all services managed by Supervisor');
+);
 
+desc('Upload merged supervisor config to the server');
 task(
     'supervisor:upload',
     static function (): void {
         $folder = get('supervisor_source_dir');
-        if (!test('[ -d {{release_path}}/'.$folder.' ]')) {
+        if (!test('[ -d {{release_path}}/' . $folder . ' ]')) {
             return;
         }
 
@@ -64,32 +65,35 @@ task(
                 continue;
             }
 
-            $mergedConfigs .= trim(file_get_contents($file->getRealPath())) . "\n\n";
+            $mergedConfigs .= trim((string) file_get_contents($file->getRealPath())) . "\n\n";
         }
 
-        if ('' === $mergedConfigs) {
-            run('rm -rf {{supervisor_remote_dir}}/{{supervisor_config_filename}}');
+        $remoteFile = '{{supervisor_remote_dir}}/{{supervisor_config_filename}}';
 
+        if ($mergedConfigs === '') {
+            run("rm -rf $remoteFile");
             return;
         }
 
-        $delimiter = 'SUPERVISOR_CONFIG_' . bin2hex(random_bytes(8));
-        run(
-            "cat <<'{$delimiter}' > {{supervisor_remote_dir}}/{{supervisor_config_filename}}\n"
-            . $mergedConfigs
-            . "\n{$delimiter}"
-        );
-        // todo create a test that checks for multiline replacements
-
+        // Write merged config to a local temp file and upload it safely,
+        // avoiding any shell injection risks from the config file contents.
+        $tmpFile = tempnam(sys_get_temp_dir(), 'supervisor_');
+        try {
+            file_put_contents($tmpFile, $mergedConfigs);
+            upload($tmpFile, $remoteFile);
+        } finally {
+            @unlink($tmpFile);
+        }
     }
-)->desc('This task uploads your processed supervisor configs to the specified directory on your server');
+);
 
+desc('Start all services managed by Supervisor');
 task(
     'supervisor:start',
     static function (): void {
         run('{{bin/supervisor}} update');
         run('{{bin/supervisor}} start all');
     }
-)->desc('Starts all services managed by Supervisor');
+);
 
 before('supervisor:upload', 'supervisor:stop');

@@ -1,22 +1,21 @@
-<phpunit bootstrap="tests/bootstrap.php"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
          colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
          stopOnError="false"
          stopOnFailure="false"
-         verbose="true"
 >
     <testsuites>
         <testsuite name="Recipes">
-            <directory suffix="Test.php">test/src/</directory>
+            <directory suffix="Test.php">tests/src/</directory>
         </testsuite>
     </testsuites>
 
-    <!-- Filter for coverage reports. -->
-    <filter>
-        <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory>src/</directory>
-        </whitelist>
-    </filter>
+    <coverage>
+        <include>
+            <directory>common/</directory>
+            <directory>contrib/</directory>
+            <directory>recipies/</directory>
+        </include>
+    </coverage>
 </phpunit>
