@@ -20,13 +20,25 @@
     }
   },
   "require": {
-    "deployer/deployer": "^7.0",
-    "symfony/finder": "^5.0|^6.0"
+    "deployer/deployer": "^8.0",
+    "symfony/finder": "^6.0|^7.0|^8.0"
   },
   "require-dev": {
-    "bytic/console": "^0.9|^1.0|^2.0",
-    "bytic/migrations": "^0.12",
-    "bytic/scheduler": "^0.9|^1.0|^2.0",
-    "bytic/phpqatools": "^1.0"
+    "bytic/console": "^1.0|^2.0",
+    "bytic/migrations": "^0.13",
+    "bytic/scheduler": "^1.0|^2.0",
+    "bytic/phpqatools": "^1.0",
+    "nyholm/psr7": "^1.8"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true,
+      "phpstan/extension-installer": true,
+      "ergebnis/composer-normalize": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "bytic/phpqatools": true
+    }
   }
 }
