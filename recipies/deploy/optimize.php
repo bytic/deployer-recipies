@@ -1,8 +1,8 @@
 <?php
 
-namespace Deployer;
+declare(strict_types=1);
 
-require_once __DIR__ . '/../../contrib/bytic-commands.php';
+namespace Deployer;
 
 desc('Optimize deployed application');
 task('deploy:optimize', ['bytic:optimize']);

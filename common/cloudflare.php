@@ -1,90 +1,68 @@
 <?php
+
+declare(strict_types=1);
+
 /* (c) David Jordan / CyberDuck <david@cyber-duck.co.uk>
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 namespace Deployer;
 
-desc('Clearing Cloudflare Cache');
-task('deploy:cloudflare', function () {
+use Deployer\Utility\Httpie;
 
+/**
+ * Cloudflare configuration array keys:
+ *   - service_key (string)  — Cloudflare service key (X-Auth-User-Service-Key)
+ *   - api_token   (string)  — API token (Authorization: ******
+ *   - email       (string)  — Account e-mail (used with api_key)
+ *   - api_key     (string)  — Global API key (used with email)
+ *   - domain      (string)  — Domain whose cache should be purged (required)
+ */
+set('cloudflare', []);
+
+desc('Clear Cloudflare cache');
+task('deploy:cloudflare', static function (): void {
     $config = get('cloudflare', []);
 
-    // validate config and set headers
+    // Build auth headers.
     if (!empty($config['service_key'])) {
-        $headers = [
-            'X-Auth-User-Service-Key' => $config['service_key']
-        ];
+        $authHeaders = ['X-Auth-User-Service-Key' => $config['service_key']];
     } elseif (!empty($config['api_token'])) {
-        $headers = [
-            'Authorization' => 'Bearer ' . $config['api_token']
-        ];
+        $authHeaders = ['Authorization' => 'Bearer ' . $config['api_token']];
     } elseif (!empty($config['email']) && !empty($config['api_key'])) {
-        $headers = [
-            'X-Auth-Key' => $config['api_key'],
-            'X-Auth-Email' => $config['email']
+        $authHeaders = [
+            'X-Auth-Key'   => $config['api_key'],
+            'X-Auth-Email' => $config['email'],
         ];
     } else {
-        throw new \RuntimeException("Set a service key or email / api key");
+        throw new \RuntimeException('Cloudflare: provide a service_key, api_token, or email + api_key.');
     }
-
-    $headers['Content-Type'] = 'application/json';
 
     if (empty($config['domain'])) {
-        throw new \RuntimeException("Set a domain");
+        throw new \RuntimeException('Cloudflare: set a domain.');
     }
 
-    $makeRequest = function ($url, $opts = []) use ($headers) {
-        $ch = curl_init("https://api.cloudflare.com/client/v4/$url");
+    $baseUrl = 'https://api.cloudflare.com/client/v4/';
 
-        $parsedHeaders = [];
-        foreach ($headers as $key => $value) {
-            $parsedHeaders[] = "$key: $value";
-        }
+    // Resolve the zone ID for the given domain.
+    $zonesResponse = Httpie::get($baseUrl . 'zones')
+        ->query(['name' => $config['domain']])
+        ->addHeaders($authHeaders)
+        ->send();
 
-        curl_setopt_array($ch, [
-            CURLOPT_HTTPHEADER => $parsedHeaders,
-            CURLOPT_RETURNTRANSFER => true
-        ]);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-
-        curl_setopt_array($ch, $opts);
-
-        $res = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            throw new \RuntimeException("Error making curl request (result: " . curl_error($ch) . ")");
-        }
-
-        curl_close($ch);
-
-        return $res;
-    };
-
-    // get the mysterious zone id from Cloud Flare
-    $zones = json_decode($makeRequest(
-                             "zones?name={$config['domain']}"
-                         ), true);
+    $zones = json_decode($zonesResponse, true);
 
     if (empty($zones['success']) || !empty($zones['errors'])) {
-        throw new \RuntimeException("Problem with zone data");
-    } else {
-        $zoneId = current($zones['result'])['id'];
+        throw new \RuntimeException('Cloudflare: could not retrieve zone data for domain "' . $config['domain'] . '".');
     }
 
-    // make purge request
-    $makeRequest(
-        "zones/$zoneId/purge_cache",
-        [
-            CURLOPT_CUSTOMREQUEST => 'DELETE',
-            CURLOPT_POSTFIELDS => json_encode(
-                [
-                    'purge_everything' => true
-                ]
-            ),
-        ]
-    );
+    $zoneId = current($zones['result'])['id'];
+
+    // Purge all files in the zone.
+    Httpie::post($baseUrl . "zones/$zoneId/purge_cache")
+        ->addHeaders($authHeaders)
+        ->body(['purge_everything' => true])
+        ->send();
 });
