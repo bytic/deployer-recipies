@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Deployer;
 
+use Deployer\Exception\Exception;
+
 /**
  * Path to the bytic binary on the remote host.
  * Resolution order: global `bytic` binary, project vendor, global Composer vendor.
@@ -11,7 +13,7 @@ namespace Deployer;
 set('bin/bytic', function (): string {
     try {
         return run('which bytic');
-    } catch (\RuntimeException $e) {
+    } catch (Exception $e) {
         // not in PATH — fall through to local vendor checks
     }
 
