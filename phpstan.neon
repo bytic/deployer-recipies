@@ -1,0 +1,16 @@
+parameters:
+    level: 5
+    bootstrapFiles:
+        - tests/bootstrap.php
+    paths:
+        - common
+        - contrib
+        - recipies
+        - tests/src
+    ignoreErrors:
+        -
+            identifier: require.fileNotFound
+            path: recipies/bytic.php
+        -
+            identifier: requireOnce.fileNotFound
+            path: recipies/deploy/assets.php

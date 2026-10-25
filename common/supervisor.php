@@ -6,7 +6,7 @@ namespace Deployer;
 
 use Symfony\Component\Finder\Finder;
 
-/**
+/*
  * The supervisor(ctl) binary
  */
 set(
@@ -57,7 +57,7 @@ task(
         }
 
         $finder = new Finder();
-        $finder->files()->in($folder);
+        $finder->files()->in($folder)->sortByName();
 
         $mergedConfigs = '';
         foreach ($finder as $file) {
@@ -65,21 +65,29 @@ task(
                 continue;
             }
 
-            $mergedConfigs .= trim((string) file_get_contents($file->getRealPath())) . "\n\n";
+            $contents = file_get_contents($file->getRealPath());
+            if ($contents === false) {
+                throw new \RuntimeException('Unable to read Supervisor config file: ' . $file->getPathname());
+            }
+            $mergedConfigs .= trim($contents) . "\n\n";
         }
 
         $remoteFile = '{{supervisor_remote_dir}}/{{supervisor_config_filename}}';
 
         if ($mergedConfigs === '') {
-            run("rm -rf $remoteFile");
+            run('rm -f ' . quote($remoteFile));
             return;
         }
 
-        // Write merged config to a local temp file and upload it safely,
-        // avoiding any shell injection risks from the config file contents.
         $tmpFile = tempnam(sys_get_temp_dir(), 'supervisor_');
+        if ($tmpFile === false) {
+            throw new \RuntimeException('Unable to create temporary Supervisor config file.');
+        }
+
         try {
-            file_put_contents($tmpFile, $mergedConfigs);
+            if (file_put_contents($tmpFile, $mergedConfigs) === false) {
+                throw new \RuntimeException('Unable to write temporary Supervisor config file.');
+            }
             upload($tmpFile, $remoteFile);
         } finally {
             @unlink($tmpFile);

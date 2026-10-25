@@ -24,5 +24,3 @@ define('DEPLOYER_PARALLEL_PTY', false);
 define('BYTIC_RECIPIES', dirname(__DIR__) . '/recipies/');
 define('BYTIC_CONTRIB', dirname(__DIR__) . '/contrib/');
 define('DEPLOYER_FIXTURES', __DIR__ . '/fixtures');
-
-require_once __DIR__ . '/tester.php';
