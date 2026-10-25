@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Deployer;
 
-/*** CONFIGURATION ***/
+// Configuration
 set('git_cache', true);
 set('keep_releases', 3);
 set('writable_use_sudo', false);

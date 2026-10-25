@@ -17,8 +17,8 @@ task(
         if (!test('[ -d {{previous_release}}/vendor ]')) {
             return;
         }
-        $sudo = get('cleanup_use_sudo') ? 'sudo ' : '';
-        run("{$sudo}rm -rf {{previous_release}}/vendor");
+        $sudo = get('cleanup_use_sudo', false) ? 'sudo ' : '';
+        run($sudo . 'rm -rf ' . quote('{{previous_release}}/vendor'));
     }
 );
 
@@ -32,8 +32,7 @@ task(
         if (!test('[ -d {{previous_release}}/bootstrap/cache ]')) {
             return;
         }
-        $sudo = get('cleanup_use_sudo') ? 'sudo ' : '';
-        run("{$sudo}rm -rf {{previous_release}}/bootstrap/cache");
+        $sudo = get('cleanup_use_sudo', false) ? 'sudo ' : '';
+        run($sudo . 'rm -rf ' . quote('{{previous_release}}/bootstrap/cache'));
     }
 );
-

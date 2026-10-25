@@ -6,7 +6,6 @@ namespace Deployer;
 
 require __DIR__ . '/../../common/supervisor.php';
 
-before('supervisor:upload', 'supervisor:stop');
 before('deploy:symlink', 'supervisor:upload');
 
 after('deploy:success', 'supervisor:start');

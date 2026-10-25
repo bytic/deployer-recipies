@@ -12,7 +12,7 @@ namespace Deployer;
 
 use Deployer\Utility\Httpie;
 
-/**
+/*
  * Cloudflare configuration array keys:
  *   - service_key (string)  — Cloudflare service key (X-Auth-User-Service-Key)
  *   - api_token   (string)  — API token (Authorization: ******
@@ -25,44 +25,76 @@ set('cloudflare', []);
 desc('Clear Cloudflare cache');
 task('deploy:cloudflare', static function (): void {
     $config = get('cloudflare', []);
+    if (!is_array($config)) {
+        throw new \UnexpectedValueException('Cloudflare configuration must be an array.');
+    }
 
     // Build auth headers.
-    if (!empty($config['service_key'])) {
-        $authHeaders = ['X-Auth-User-Service-Key' => $config['service_key']];
-    } elseif (!empty($config['api_token'])) {
-        $authHeaders = ['Authorization' => 'Bearer ' . $config['api_token']];
-    } elseif (!empty($config['email']) && !empty($config['api_key'])) {
+    $serviceKey = $config['service_key'] ?? null;
+    $apiToken = $config['api_token'] ?? null;
+    $email = $config['email'] ?? null;
+    $apiKey = $config['api_key'] ?? null;
+
+    if (is_string($serviceKey) && $serviceKey !== '') {
+        $authHeaders = ['X-Auth-User-Service-Key' => $serviceKey];
+    } elseif (is_string($apiToken) && $apiToken !== '') {
+        $authHeaders = ['Authorization' => 'Bearer ' . $apiToken];
+    } elseif (is_string($email) && $email !== '' && is_string($apiKey) && $apiKey !== '') {
         $authHeaders = [
-            'X-Auth-Key'   => $config['api_key'],
-            'X-Auth-Email' => $config['email'],
+            'X-Auth-Key'   => $apiKey,
+            'X-Auth-Email' => $email,
         ];
     } else {
         throw new \RuntimeException('Cloudflare: provide a service_key, api_token, or email + api_key.');
     }
 
-    if (empty($config['domain'])) {
+    $domain = $config['domain'] ?? null;
+    if (!is_string($domain) || $domain === '') {
         throw new \RuntimeException('Cloudflare: set a domain.');
     }
 
     $baseUrl = 'https://api.cloudflare.com/client/v4/';
 
     // Resolve the zone ID for the given domain.
-    $zonesResponse = Httpie::get($baseUrl . 'zones')
-        ->query(['name' => $config['domain']])
-        ->addHeaders($authHeaders)
-        ->send();
+    $zonesRequest = Httpie::get($baseUrl . 'zones')->query(['name' => $domain]);
+    foreach ($authHeaders as $header => $value) {
+        $zonesRequest->header($header, $value);
+    }
+    $zonesResponse = $zonesRequest->send();
 
-    $zones = json_decode($zonesResponse, true);
-
-    if (empty($zones['success']) || !empty($zones['errors'])) {
-        throw new \RuntimeException('Cloudflare: could not retrieve zone data for domain "' . $config['domain'] . '".');
+    if ($zonesResponse->status() < 200 || $zonesResponse->status() >= 300) {
+        throw new \RuntimeException(
+            'Cloudflare: zone lookup returned HTTP ' . $zonesResponse->status() . '.'
+        );
     }
 
-    $zoneId = current($zones['result'])['id'];
+    $zones = $zonesResponse->json();
+    if (!is_array($zones) || ($zones['success'] ?? false) !== true || !empty($zones['errors'])) {
+        throw new \RuntimeException('Cloudflare: could not retrieve zone data for domain "' . $domain . '".');
+    }
+
+    $zone = $zones['result'][0] ?? null;
+    $zoneId = is_array($zone) ? ($zone['id'] ?? null) : null;
+    if (!is_string($zoneId) || $zoneId === '') {
+        throw new \RuntimeException('Cloudflare: no zone was found for domain "' . $domain . '".');
+    }
 
     // Purge all files in the zone.
-    Httpie::post($baseUrl . "zones/$zoneId/purge_cache")
-        ->addHeaders($authHeaders)
-        ->body(['purge_everything' => true])
-        ->send();
+    $purgeRequest = Httpie::post($baseUrl . 'zones/' . rawurlencode($zoneId) . '/purge_cache')
+        ->jsonBody(['purge_everything' => true]);
+    foreach ($authHeaders as $header => $value) {
+        $purgeRequest->header($header, $value);
+    }
+    $purgeResponse = $purgeRequest->send();
+
+    if ($purgeResponse->status() < 200 || $purgeResponse->status() >= 300) {
+        throw new \RuntimeException(
+            'Cloudflare: cache purge returned HTTP ' . $purgeResponse->status() . '.'
+        );
+    }
+
+    $purge = $purgeResponse->json();
+    if (!is_array($purge) || ($purge['success'] ?? false) !== true || !empty($purge['errors'])) {
+        throw new \RuntimeException('Cloudflare: cache purge failed.');
+    }
 });
